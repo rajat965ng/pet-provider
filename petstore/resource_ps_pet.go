@@ -21,13 +21,9 @@ func resourcePSPet() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
-			"species": {
+			"status": {
 				Type:     schema.TypeString,
 				ForceNew: true,
-				Required: true,
-			},
-			"age": {
-				Type:     schema.TypeInt,
 				Required: true,
 			},
 		},
@@ -37,9 +33,8 @@ func resourcePSPet() *schema.Resource {
 func resourcePSPetCreate(d *schema.ResourceData, meta interface{}) error {
 	conn := meta.(*sdk.Client)
 	options := sdk.PetCreateOptions{
-		Name:    d.Get("name").(string),
-		Species: d.Get("species").(string),
-		Age:     d.Get("age").(int),
+		Name:   d.Get("name").(string),
+		Status: d.Get("status").(string),
 	}
 
 	pet, err := conn.Pets.Create(options)
@@ -58,8 +53,7 @@ func resourcePSPetRead(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 	d.Set("name", pet.Name)
-	d.Set("species", pet.Species)
-	d.Set("age", pet.Age)
+	d.Set("status", pet.Status)
 	return nil
 }
 
@@ -69,9 +63,7 @@ func resourcePSPetUpdate(d *schema.ResourceData, meta interface{}) error {
 	if d.HasChange("name") {
 		options.Name = d.Get("name").(string)
 	}
-	if d.HasChange("age") {
-		options.Age = d.Get("age").(int)
-	}
+
 	conn.Pets.Update(d.Id(), options)
 	return resourcePSPetRead(d, meta)
 }
